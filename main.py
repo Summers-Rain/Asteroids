@@ -45,10 +45,13 @@ def main():
         updatable.update(dt)
 
         for asteroid in asteroids:
-            if player.collision(asteroid):
-                print("Game Over!")
-                pygame.quit()
-                sys.exit()
+            if not player.is_respawning and player.collision(asteroid):
+                if player.respawn():
+                    pass
+                else:
+                    print("Game Over!")
+                    pygame.quit()
+                    sys.exit()
         
         for asteroid in asteroids:
             for shot in shots:

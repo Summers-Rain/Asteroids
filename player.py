@@ -6,11 +6,19 @@ from bullet import Shot
 class Player(CircleShape, pygame.sprite.Sprite):
     def __init__(self, x, y):
         CircleShape.__init__(self, x, y, PLAYER_RADIUS)
-        pygame.sprite.Sprite.__init__(self, self.containers)  # Add this line
+        pygame.sprite.Sprite.__init__(self, self.containers)
+
+        self.lives = INITIAL_LIVES
+        self.is_respawning = False
+        self.respawn_timer = 0
+        self.respawn_duration = RESPAWN_INVULNERABILITY_TIME
+        self.flicker_counter = 0
         self.rotation = 0
         self.timer = 0
 
     def draw(self, screen):
+        if self.is_respawning and self.flicker_counter % 6 >= 3:
+            return
         pygame.draw.polygon(screen, (255, 255, 255), self.triangle(), 2)
 
     def triangle(self):
@@ -35,8 +43,25 @@ class Player(CircleShape, pygame.sprite.Sprite):
         if keys[pygame.K_SPACE]:
             self.shoot()
 
+        if self.is_respawning:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.respawn_timer > self.respawn_duration:
+                self.is_respawning = False
+            self.flicker_counter += 1
+
         if self.timer > 0:
             self.timer -= dt
+
+    def respawn(self):
+        if self.lives > 0:
+            self.lives -= 1
+            self.position = pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+            self.velocity = pygame.Vector2(0, 0)
+            self.rotation = 0
+            self.is_respawning = True
+            self.respawn_timer = pygame.time.get_ticks()
+            return True
+        return False
 
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
