@@ -5,6 +5,7 @@ from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from bullet import Shot
+from scoremanager import ScoreManager
 
 def main():
     pygame.init()
@@ -13,8 +14,6 @@ def main():
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
-    font = pygame.font.SysFont("Arial", 30)
-    score = 0
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -29,8 +28,12 @@ def main():
     Shot.containers = (all_sprites, shots, updatable, drawable)
 
     asteroid_field = AsteroidField()
-    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    score_manager = ScoreManager()
 
+    updatable.add(score_manager)
+    drawable.add(score_manager)
+
+    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     dt = 0
 
     while True:
@@ -52,17 +55,18 @@ def main():
                 if asteroid.collision(shot):
                     asteroid.split()
                     shot.kill()
+
+                    base_points = 0
                     if asteroid.radius > 30:
-                        score += 50
+                        base_points = 50
                     elif asteroid.radius > 15:
-                        score += 100
+                        base_points = 100
                     else:
-                        score += 150
+                        base_points = 150
+
+                    score_manager.add_points(base_points)
 
         screen.fill((0, 0, 0))
-        
-        score_text = font.render(f"Score: {score}", True, (255, 255, 255))
-        screen.blit(score_text, (10, 10))
 
         for obj in drawable:
              obj.draw(screen)
