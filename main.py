@@ -8,11 +8,13 @@ from bullet import Shot
 
 def main():
     pygame.init()
-
+    pygame.font.init()
     pygame.display.set_caption("Asteroids")
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
+    font = pygame.font.SysFont("Arial", 30)
+    score = 0
 
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -48,14 +50,20 @@ def main():
         for asteroid in asteroids:
             for shot in shots:
                 if asteroid.collision(shot):
-                    print(f"Collision detected! Shot ID: {id(shot)}")
                     asteroid.split()
-                    print(f"Number of shots before kill: {len(shots)}")
                     shot.kill()
-                    print(f"Number of shots after kill: {len(shots)}")
+                    if asteroid.radius > 30:
+                        score += 50
+                    elif asteroid.radius > 15:
+                        score += 100
+                    else:
+                        score += 150
 
         screen.fill((0, 0, 0))
         
+        score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))
+
         for obj in drawable:
              obj.draw(screen)
 
