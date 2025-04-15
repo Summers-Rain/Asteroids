@@ -10,6 +10,13 @@ class Player(CircleShape, pygame.sprite.Sprite):
         CircleShape.__init__(self, x, y, PLAYER_RADIUS)
         pygame.sprite.Sprite.__init__(self, self.containers)
 
+        self.position = pygame.Vector2(x, y)
+        self.velocity = pygame.Vector2(0, 0)
+
+        self.image = pygame.Surface((PLAYER_RADIUS*2, PLAYER_RADIUS*2), pygame.SRCALPHA)
+        self.rect = self.image.get_rect()
+        self.rect.center = (int(x), int(y))
+
         self.lives = INITIAL_LIVES
         self.is_respawning = False
         self.respawn_timer = 0
@@ -56,6 +63,21 @@ class Player(CircleShape, pygame.sprite.Sprite):
                 self.is_respawning = False
             self.flicker_counter += 1
 
+        self.position.x += self.velocity.x * dt
+        self.position.y += self.velocity.y * dt
+        
+        if self.position.x > SCREEN_WIDTH + self.radius:
+            self.position.x = -self.radius
+        elif self.position.x < -self.radius:
+            self.position.x = SCREEN_WIDTH + self.radius
+            
+        if self.position.y > SCREEN_HEIGHT + self.radius:
+            self.position.y = -self.radius
+        elif self.position.y < -self.radius:
+            self.position.y = SCREEN_HEIGHT + self.radius
+        
+        self.rect.center = (int(self.position.x), int(self.position.y))
+
         if self.timer > 0:
             self.timer -= dt
 
@@ -87,5 +109,3 @@ class Player(CircleShape, pygame.sprite.Sprite):
             velocity = direction * PLAYER_SHOOT_SPEED
             shot = Shot(self.position.x, self.position.y, velocity)
             self.timer = PLAYER_SHOOT_COOLDOWN
-
-
