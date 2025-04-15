@@ -4,6 +4,8 @@ from constants import *
 from bullet import Shot
 
 class Player(CircleShape, pygame.sprite.Sprite):
+    containers = None
+
     def __init__(self, x, y):
         CircleShape.__init__(self, x, y, PLAYER_RADIUS)
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -17,8 +19,13 @@ class Player(CircleShape, pygame.sprite.Sprite):
         self.timer = 0
 
     def draw(self, screen):
-        if self.is_respawning and self.flicker_counter % 6 >= 3:
-            return
+        if self.is_respawning:
+            if self.flicker_counter % 6 >= 3:
+                return
+            
+            pygame.draw.circle(screen, (100, 200, 255), 
+                         (int(self.position.x), int(self.position.y)), 
+                         self.radius + 5, 2)
         pygame.draw.polygon(screen, (255, 255, 255), self.triangle(), 2)
 
     def triangle(self):
@@ -54,6 +61,7 @@ class Player(CircleShape, pygame.sprite.Sprite):
 
     def respawn(self):
         if self.lives > 0:
+            self
             self.lives -= 1
             self.position = pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
             self.velocity = pygame.Vector2(0, 0)

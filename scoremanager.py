@@ -2,8 +2,9 @@ import pygame
 from constants import MULTIPLIER, MULTIPLIER_DURATION, MULTIPLIER_TIMER, MAX_MULTIPLIER
 
 class ScoreManager(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, player):
         super().__init__()
+        self.player = player
         self.score = 0
         self.multiplier = MULTIPLIER
         self.multiplier_timer = MULTIPLIER_TIMER
@@ -28,6 +29,8 @@ class ScoreManager(pygame.sprite.Sprite):
     def draw(self, screen):
         score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
         screen.blit(score_text, (10, 10))
+        lives_text = self.font.render(f"Lives: {self.player.lives}", True, (255, 255, 255))
+        screen.blit(lives_text, (10, 70))
 
         if self.multiplier > 1:
             multiplier_text = self.font.render(f"Multiplier: x{self.multiplier:.1f}", True, (255, 255, 0))
