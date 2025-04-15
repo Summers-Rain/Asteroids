@@ -8,6 +8,7 @@ class Player(CircleShape, pygame.sprite.Sprite):
         CircleShape.__init__(self, x, y, PLAYER_RADIUS)
         pygame.sprite.Sprite.__init__(self, self.containers)  # Add this line
         self.rotation = 0
+        self.timer = 0
 
     def draw(self, screen):
         pygame.draw.polygon(screen, (255, 255, 255), self.triangle(), 2)
@@ -34,6 +35,9 @@ class Player(CircleShape, pygame.sprite.Sprite):
         if keys[pygame.K_SPACE]:
             self.shoot()
 
+        if self.timer > 0:
+            self.timer -= dt
+
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
 
@@ -43,6 +47,12 @@ class Player(CircleShape, pygame.sprite.Sprite):
     
     def shoot(self):
         direction = pygame.Vector2(0, 1).rotate(self.rotation)
-        velocity = direction * PLAYER_SHOOT_SPEED
-        shot = Shot(self.position.x, self.position.y, velocity)
+
+        if self.timer > 0:
+            return
+        else:
+            velocity = direction * PLAYER_SHOOT_SPEED
+            shot = Shot(self.position.x, self.position.y, velocity)
+            self.timer = PLAYER_SHOOT_COOLDOWN
+
 
