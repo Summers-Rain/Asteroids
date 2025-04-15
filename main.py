@@ -40,11 +40,19 @@ def main():
         updatable.update(dt)
 
         for asteroid in asteroids:
-             if player.collision(asteroid):
-                  print("Game Over!")
-                  pygame.quit()
-                  sys.exit()
+            if player.collision(asteroid):
+                print("Game Over!")
+                pygame.quit()
+                sys.exit()
         
+        for asteroid in asteroids:
+            for shot in shots:
+                if asteroid.collision(shot):
+                    print(f"Collision detected! Shot ID: {id(shot)}")
+                    asteroid.split()
+                    print(f"Number of shots before kill: {len(shots)}")
+                    shot.kill()
+                    print(f"Number of shots after kill: {len(shots)}")
 
         screen.fill((0, 0, 0))
         
