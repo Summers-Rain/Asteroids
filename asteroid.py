@@ -6,6 +6,10 @@ from constants import *
 class Asteroid(CircleShape):
     def __init__(self, x, y, radius):
         super().__init__(x, y, radius)
+
+        if hasattr(self.__class__, 'containers'):
+            for container in self.__class__.containers:
+                container.add(self)
         
     def draw(self, surface):
         pygame.draw.circle(surface, (255, 255, 255), (int(self.position.x), int(self.position.y)), self.radius, 2)
@@ -26,12 +30,11 @@ class Asteroid(CircleShape):
         self.rect.center = (int(self.position.x), int(self.position.y))
 
     def split(self):
-        self.kill()
         if self.radius <= ASTEROID_MIN_RADIUS:
+            self.kill()
             return
         else:
             angle = random.uniform(20, 50)
-
             new_vel1 = self.velocity.rotate(angle) * 1.2
             new_vel2 = self.velocity.rotate(-angle) * 1.2
 
@@ -40,3 +43,5 @@ class Asteroid(CircleShape):
 
             A1.velocity = new_vel1
             A2.velocity = new_vel2
+
+            self.kill()
