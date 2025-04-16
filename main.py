@@ -103,6 +103,8 @@ def main():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    running = False
 
             font = pygame.font.SysFont(None, 64)
             game_over_text = font.render("Game Over", True, (255, 0, 0))

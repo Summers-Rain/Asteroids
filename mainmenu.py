@@ -1,4 +1,5 @@
 import pygame
+import sys
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 
 class MainMenu:
@@ -26,6 +27,7 @@ class MainMenu:
                         in_menu = False  # Start the game
                     elif event.key == pygame.K_ESCAPE:
                         pygame.quit()
+                        sys.exit()
                         return False  # Exit the game
             
             # Draw the menu
