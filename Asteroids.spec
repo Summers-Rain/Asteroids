@@ -13,6 +13,7 @@ a = Analysis(
     excludes=[],
     noarchive=False,
     optimize=0,
+    clean_build=True
 )
 pyz = PYZ(a.pure)
 
@@ -36,4 +37,5 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     icon='assets/images/icon.ico',
+    distpather='./',
 )
