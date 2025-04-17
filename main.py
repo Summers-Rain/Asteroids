@@ -7,6 +7,7 @@ from asteroidfield import AsteroidField
 from bullet import Shot
 from scoremanager import ScoreManager
 from mainmenu import MainMenu
+from explosion import Explosion
 
 def main():
     pygame.init()
@@ -55,6 +56,7 @@ def main():
                 asteroids = pygame.sprite.Group()
                 all_sprites = pygame.sprite.Group()
                 shots = pygame.sprite.Group()
+                explosions = pygame.sprite.Group()
 
                 Player.containers = (all_sprites, updatable, drawable)
                 Asteroid.containers = (asteroids, updatable, drawable)
@@ -73,6 +75,7 @@ def main():
         elif current_state == PLAYING:
 
             updatable.update(dt)
+            explosions.update()
 
             for asteroid in asteroids:
                 if not player.is_respawning and player.collision(asteroid):
@@ -85,6 +88,8 @@ def main():
             for asteroid in asteroids:
                 for shot in shots:
                     if asteroid.collision(shot):
+                        explosion = Explosion(asteroid.rect.center, size_factor=asteroid.radius)
+                        explosions.add(explosion)
                         asteroid.split()
                         shot.kill()
 
@@ -98,6 +103,7 @@ def main():
 
                         score_manager.add_points(base_points)
             screen.fill((0, 0, 0))
+            explosions.draw(screen)
 
         elif current_state == GAME_OVER:
             for event in pygame.event.get():
