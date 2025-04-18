@@ -98,10 +98,22 @@ def main():
 
         # PLAYING state logic
         elif current_state == PLAYING:
-            updatable.update(dt)    # Update all game objects
+            # Get keyboard state once per frame
+            keys = pygame.key.get_pressed()
+
+            # Update all objects, giving player object the keyboard state
+            for entity in updatable:
+                if isinstance(entity, Player):
+                    entity.update(dt, keys)
+                else:
+                    entity.update(dt)
+
             explosions.update()     # Update explosion animations
 
             screen.fill((0, 0, 0))  # Clear screen with black background
+
+            player.draw_particles(screen)
+            player.draw(screen)
 
             # Collision detection: player vs asteroids
             for asteroid in asteroids:
