@@ -62,6 +62,7 @@ def main():
                         running = False
         # MAIN MENU state logic
         if current_state == MAIN_MENU:
+            menu = MainMenu(score_manager)
             continue_to_game = menu.main_menu(screen)
 
             if continue_to_game:
@@ -89,6 +90,9 @@ def main():
                 updatable.add(score_manager)
                 drawable.add(score_manager)
 
+                # Reset score for a new game
+                score_manager.reset_score()
+
                 # Change state to playing
                 current_state = PLAYING
 
@@ -109,6 +113,7 @@ def main():
                     if player.respawn():
                         pass
                     else:
+                        score_manager.update_high_score() # Update highscore based on current score
                         current_state = GAME_OVER
         
             # Collision detection: bullets vs asteroids
@@ -170,6 +175,8 @@ def main():
             game_over_text = font.render("Game Over", True, (255, 0, 0))
             # Render the player's findal score in white
             score_text = font.render(f"Score: {score_manager.score}", True, (255, 255, 255))
+            # Render the high score in white
+            high_score_text = font.render(f"High Score: {score_manager.high_score}", True, (255, 255, 255))
 
             # Position and draw the "Game Over" text centered but slightly above center
             screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2,
@@ -177,6 +184,24 @@ def main():
             # Position and draw the score text centered but slightly below center
             screen.blit(score_text, (SCREEN_WIDTH // 2 - score_text.get_width() // 2,
                                      SCREEN_HEIGHT // 2 - score_text.get_height() // 2 + 50))
+            # Position and draw the high score text below the score text
+            screen.blit(high_score_text, (SCREEN_WIDTH // 2 - high_score_text.get_width() // 2,
+                                          SCREEN_HEIGHT // 2 - high_score_text.get_height() // 2 + 100))
+            
+            # Check if a new high score was achieved and display a special message
+            if score_manager.new_high_score_achieved:
+                # Create a pulsing/flashing effect by using time
+                flash_speed = 500 # miliseconds
+                flash_on = (pygame.time.get_ticks() % (flash_speed * 2)) < flash_speed
+
+                if flash_on:
+                    # Create a celebratory message in a bright color
+                    high_score_msg_font = pygame.font.SysFont(None, 64)
+                    high_score_msg = high_score_msg_font.render("NEW HIGH SCORE!", True, (255, 215, 0))
+
+                    # Position it above the high score display
+                    screen.blit(high_score_msg, (SCREEN_WIDTH // 2 - high_score_msg.get_width() // 2, 
+                                                 SCREEN_HEIGHT // 2 - 150))
             
             # Render instructions to return to main menu
             menu_text = font.render("Press SPACE to return to menu", True, (255, 255, 255))

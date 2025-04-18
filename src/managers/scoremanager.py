@@ -6,6 +6,9 @@ class ScoreManager(pygame.sprite.Sprite):
         super().__init__()
         self.player = player
         self.score = 0
+        self.high_score = 0
+        self.new_high_score_achieved = False
+        self.load_high_score() # Load previous high score
         self.multiplier = MULTIPLIER
         self.multiplier_timer = MULTIPLIER_TIMER
         self.multiplier_duration = MULTIPLIER_DURATION
@@ -25,6 +28,36 @@ class ScoreManager(pygame.sprite.Sprite):
             self.multiplier = self.max_multiplier
 
         self.multiplier_timer = pygame.time.get_ticks()
+
+    def update_high_score(self):
+        self.new_high_score_achieved = False # Reset the flag
+        if self.score > self.high_score:
+            self.high_score = self.score
+            self.new_high_score_achieved = True # Set flag when new high score is achieved
+            # Save high score to file
+            self.save_high_score()
+
+    def save_high_score(self):
+        # Save high score to a file
+        with open("highscore.txt", "w") as f:
+            f.write(str(self.high_score))
+
+    def load_high_score(self):
+        # Load high score from file if it exists
+        try:
+            with open("highscore.txt", "r") as f:
+                self.high_score = int(f.read())
+        except (FileNotFoundError, ValueError):
+            # If file doesn't exist or content is invalid, keep default
+            self.high_score = 0
+    
+    def reset_score(self):
+        self.update_high_score() # make sure high score is updated
+        self.score = 0 # Then reset the score
+
+    def reset_high_score(self):
+        self.high_score = 0
+        self.save_high_score() # Save the reset high score to file
 
     def draw(self, screen):
         score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
